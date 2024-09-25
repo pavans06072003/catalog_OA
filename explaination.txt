@@ -1,0 +1,129 @@
+Theoretical Explanation of the C++ Code
+
+This program is designed to solve a specific type of polynomial interpolation problem using Lagrange Interpolation. The goal is to find the constant term (c) of a polynomial given several points (roots) in the form of  pairs, where the -values (roots) and the corresponding -values are provided, but the -values are encoded in different number bases. The program decodes these values and uses Lagrange interpolation to compute the polynomial’s constant term.
+
+What is Lagrange Interpolation?
+
+Lagrange interpolation is a method of constructing a polynomial of degree  that passes through  points. Given a set of  data points , the Lagrange interpolation formula constructs a polynomial  of degree  such that:
+
+P(x) = \sum_{i=0}^{n-1} y_i \cdot L_i(x)
+
+where each  is called the Lagrange basis polynomial and is defined as:
+
+L_i(x) = \prod_{\substack{0 \leq j < n \\ j \neq i}} \frac{x - x_j}{x_i - x_j}
+
+This ensures that for each point , the polynomial  evaluates to  at . The constant term  of the polynomial  is the value of  when .
+
+
+---
+
+Step-by-Step Breakdown of the Code
+
+1. Decoding Values from Different Bases
+
+In the given problem, the -values (corresponding to each -value) are provided in different number bases (e.g., base-2, base-10, base-16, etc.). The decodeValue() function takes a string representation of a number and a base, then converts it into a standard integer.
+
+Why?
+The -values are provided in a variety of number systems. For example, "111" in base-2 is 7 in decimal, and "1A22867F0CA" in base-16 is a large hexadecimal number.
+
+How?
+The strtoll() function converts a string (such as "111") into a long long integer, based on the given base (2, 10, 16, etc.).
+
+
+2. Lagrange Interpolation Function
+
+double lagrangeInterpolation(int x[], long long y[], int n) {
+    double result = 0;
+
+    for (int i = 0; i < n; i++) {
+        double term = y[i];
+        for (int j = 0; j < n; j++) {
+            if (i != j) {
+                term *= (0 - x[j]) / (double)(x[i] - x[j]);
+            }
+        }
+        result += term;
+    }
+
+    return result;
+}
+
+Purpose:
+The lagrangeInterpolation() function computes the value of the polynomial at  using the Lagrange interpolation formula.
+
+How Lagrange Interpolation Works: The idea is to construct a polynomial that passes through all given points. For each , the corresponding  value is multiplied by the product of terms based on the other  values (where ) to ensure that at each point , the interpolation polynomial evaluates to . Specifically, for each term:
+
+
+\text{term} = y_i \times \prod_{\substack{0 \leq j < n \\ j \neq i}} \frac{x - x_j}{x_i - x_j}
+
+To find the constant term (i.e., ), the code sets  and calculates the weighted sum of terms.
+
+Why Lagrange?
+Lagrange interpolation is particularly useful when you have the values of a function at specific points and want to construct a polynomial that fits all the points. It is ideal in this case because we have a set of roots  and their corresponding values .
+
+
+3. Main Function: Input Data and Processing
+
+The main function sets up two test cases:
+
+1. First Test Case:
+
+Roots 
+
+Corresponding -values, decoded from different bases:
+
+ (base-10) -> 4
+
+ (base-2) -> 7
+
+ (base-10) -> 12
+
+ (base-4) -> 39
+
+
+
+
+2. Second Test Case:
+
+Roots 
+
+Corresponding -values, decoded from various bases:
+
+ (base-10) -> 28735619723837
+
+ (base-16) -> 11112341428570
+
+And so on for other points...
+
+
+
+
+
+The function calls lagrangeInterpolation() twice, once for each test case, to compute the constant term of the polynomial that passes through these points.
+
+
+---
+
+The Key Theoretical Concepts
+
+1. Polynomial Interpolation: Polynomial interpolation constructs a polynomial that exactly passes through a set of points. In this case, Lagrange interpolation provides a straightforward method to compute such a polynomial without solving a system of linear equations.
+
+
+2. Lagrange Basis Polynomial: The Lagrange basis polynomial  is designed to be 1 at  and 0 at all other  (where ). This allows the interpolation polynomial to match the given -value exactly at each .
+
+
+3. Constant Term (c): The constant term of a polynomial is the value of the polynomial when . This is computed by evaluating the interpolation polynomial at , which is done directly by setting  in the lagrangeInterpolation() function.
+
+
+
+
+---
+
+Conclusion
+
+The code effectively decodes the -values from different bases, constructs a polynomial using Lagrange interpolation, and calculates the constant term of the polynomial at .
+
+This approach is mathematically robust, leveraging Lagrange interpolation to handle polynomial fitting in an elegant way, and it avoids the need for matrix-based methods or solving systems of equations.
+
+
+Lagrange interpolation is ideal for small datasets like this, but it becomes inefficient for very large datasets due to the number of multiplications involved in each term of the interpolation formula. However, for the given problem with a small number of roots, it works efficiently.
